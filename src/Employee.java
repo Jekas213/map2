@@ -1,14 +1,16 @@
 import java.util.Objects;
 
-public class Employee {
-    private String fullName;
+public class Employee implements Comparable<Employee> {
+    private String name;
+    private String sureName;
     private int salary;
     private int department;
     private static int ids = 0;
     private int id;
 
-    public Employee(String fullName, int salary, int department) {
-        this.fullName = fullName;
+    public Employee(String name, String sureName, int salary, int department) {
+        this.name = name;
+        this.sureName = sureName;
         this.salary = salary;
         this.department = department;
         id = ids++;
@@ -16,7 +18,15 @@ public class Employee {
     }
 
     public String getFullName() {
-        return fullName;
+        return name + " " + sureName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSureName() {
+        return sureName;
     }
 
     public int getSalary() {
@@ -41,7 +51,7 @@ public class Employee {
 
     @Override
     public String toString() {
-        return "ФИО: " + fullName + ", зарплата: " + salary + ", департамент: " + department + ", id: " + id;
+        return "ФИО: " + getFullName() + ", зарплата: " + salary + ", департамент: " + department + ", id: " + id;
     }
 
     @Override
@@ -55,5 +65,10 @@ public class Employee {
     @Override
     public int hashCode() {
         return Objects.hash(department);
+    }
+
+    @Override
+    public int compareTo(Employee employee) {
+        return salary - employee.getSalary();
     }
 }
