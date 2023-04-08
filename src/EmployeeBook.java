@@ -1,145 +1,137 @@
-import java.sql.SQLOutput;
+
+import java.util.*;
 
 public class EmployeeBook {
-    private Employee[] employees;
-    private int size;
+    Map<String, Employee> employees = new HashMap<>(Map.of(
+            "Иван Иванов",
+            new Employee(
+                    "Иван",
+                    "Иванов",
+                    23132,
+                    1),
+            "Иван1 Иванов1",
+            new Employee(
+                    "Иван1",
+                    "Иванов1",
+                    54512,
+                    2),
+            "Иван2 Иванов2",
+            new Employee(
+                    "Иван2",
+                    "Иванов2",
+                    256,
+                    3),
+            "Иван3 Иванов3",
+            new Employee(
+                    "Иван3",
+                    "Иванов3",
+                    34282,
+                    1),
+            "Иван4 Иванов4",
+            new Employee(
+                    "Иван4",
+                    "Иванов4",
+                    33132,
+                    2),
+            "Иван5 Иванов5",
+            new Employee(
+                    "Иван5",
+                    "Иванов5",
+                    23542,
+                    3),
+            "Иван6 Иванов6",
+            new Employee(
+                    "Иван6",
+                    "Иванов6",
+                    43132,
+                    1)
+    ));
 
-    public EmployeeBook() {
-        this.employees = new Employee[10];
-    }
-
-    public void addEmployee(String employeeName, int employeeSalary, int employeeDepartment) {
-        if (size >= employees.length) {
-            System.out.println("Нельзя добавить сотрудника, все места занятяты");
+    public void addEmployee(String employeeName, String employeeSureName, int employeeSalary, int employeeDepartment) {
+        if (employees.containsKey(employeeName + " " + employeeSureName)) {
+            throw new RuntimeException("такой уже есть");
+        } else {
+            employees.put(
+                    employeeName + " " + employeeSureName,
+                    new Employee(
+                            employeeName,
+                            employeeSureName,
+                            employeeSalary,
+                            employeeDepartment));
         }
-        Employee newEmployee = new Employee(employeeName, employeeSalary, employeeDepartment);
-        employees[size++] = newEmployee;
     }
 
-    public void removeEmployee(String fullName, int id) {
-        for (int i = 0; i < employees.length; i++) {
-            if (employees[i].getFullName().equals(fullName) || employees[i].getId() == id) {
-                System.out.println(employees[i].getFullName() + " удалён");
-                System.arraycopy(employees, i + 1, employees, i, size - i - 1);
-                employees[size - 1] = null;
-                size--;
-                return;
-            }
+    public void removeEmployee(String name, String sureName) {
+        if (!employees.containsKey(name + " " + sureName)) {
+            throw new RuntimeException("нет такого сотрудника");
+        } else {
+            employees.remove(name + " " + sureName);
         }
     }
 
-    public Employee findeEmployee(String fullName) {
-        int index = 0;
-        for (int i = 0; i < size; i++) {
-            if (employees[i].getFullName().equals(fullName)) {
-                index = i;
-            }
+    public Employee findEmployee(String name, String sureName) {
+        if (!employees.containsKey(name + " " + sureName)) {
+            throw new RuntimeException("нет такого сотрудника");
+        } else {
+            return employees.get(name + " " + sureName);
         }
-        return employees[index];
     }
 
-    public Employee changeEmployeeSalary(Employee findeEmployee, int newSalary) {
-        findeEmployee.setSalary(newSalary);
-        return findeEmployee;
+    public void changeEmployeeSalary(Employee findEmployee, int newSalary) {
+        findEmployee.setSalary(newSalary);
     }
 
-    public Employee changeEmployeeDepartment(Employee findeEmployee, int newDepartment) {
-        findeEmployee.setDepartment(newDepartment);
-        return findeEmployee;
+    public void changeEmployeeDepartment(Employee findEmployee, int newDepartment) {
+        findEmployee.setDepartment(newDepartment);
     }
 
     public void printEmployeesByDepartment(int numberDepartment) {
         System.out.println("В " + numberDepartment + " отделе состоят сотрудники: ");
-        for (int i = 0; i < size; i++) {
-            if (employees[i].getDepartment() == numberDepartment) {
-                System.out.println(employees[i].getFullName());
-            }
-        }
-    }
-
-    public int getMinNumberDepartment() {
-        int min = employees[0].getDepartment();
-        for (int i = 0; i < size; i++) {
-            if (employees[i].getDepartment() < min) {
-                min = employees[i].getDepartment();
-            }
-        }
-        return min;
-    }
-
-    public int getMaxNumberDepartment(){
-        int max = employees[0].getDepartment();
-        for (int i = 0; i < size; i++) {
-            if (employees[i].getDepartment() > max) {
-                max = employees[i].getDepartment();
-            }
-        }
-        return max;
-    }
-
-    public void printAllEmployeeDepartment() {
-        for (int numberDepartment = getMinNumberDepartment(); numberDepartment <= getMaxNumberDepartment(); numberDepartment++) {
-            System.out.printf("В %d департаменте находятся сотрудники:\n", numberDepartment);
-            for (int i = 0; i < size; i++) {
-                if (employees[i].getDepartment() == numberDepartment) {
-                    System.out.println(employees[i].getFullName());
-                }
+        for (Employee employee : employees.values()) {
+            if (employee.getDepartment() == numberDepartment) {
+                System.out.println(employee);
             }
         }
     }
 
 
     public void printInfoEmployee() {
-        for (int i = 0; i < size; i++) {
-            System.out.println(employees[i]);
+        for (Employee employee : employees.values()) {
+            System.out.println(employee);
         }
+        System.out.println();
     }
 
     public void printFullNameEmployee() {
-        for (int i = 0; i < size; i++) {
-            System.out.println(employees[i].getFullName());
+        for (Employee employee : employees.values()) {
+            System.out.println(employee.getFullName());
         }
+        System.out.println();
     }
 
     public double getAllSalary() {
         int allSalary = 0;
-        for (int i = 0; i < size; i++) {
-            allSalary += employees[i].getSalary();
+        for (Employee employee : employees.values()) {
+            allSalary += employee.getSalary();
         }
         return allSalary;
     }
 
     public Employee getEmployeeMinSalary() {
-        int min = employees[0].getSalary();
-        int index = 0;
-        for (int i = 0; i < size; i++) {
-            if (employees[i].getSalary() < min) {
-                min = employees[i].getSalary();
-            }
-            if (min == employees[i].getSalary()) {
-                index = i;
-            }
-        }
-        return employees[index];
+        List<Employee> employeeList = new ArrayList<>(employees.values());
+        Collections.sort(employeeList);
+        return employeeList.get(0);
     }
 
     public Employee getEmployeeMaxSalary() {
-        int max = employees[0].getSalary();
-        int index = 0;
-        for (int i = 0; i < size; i++) {
-            if (employees[i].getSalary() > max) {
-                max = employees[i].getSalary();
-            }
-            if (max == employees[i].getSalary()) {
-                index = i;
-            }
-        }
-        return employees[index];
+        List<Employee> employeeList = new ArrayList<>(employees.values());
+        Collections.sort(employeeList);
+        return employeeList.get(employeeList.size() - 1);
     }
+
 
     public double getAverageSalary() {
-        double average = getAllSalary() / size;
-        return average;
+        double average = getAllSalary() / employees.size();
+        return Math.round(average * 100) / 100.0d;
     }
-
 }
